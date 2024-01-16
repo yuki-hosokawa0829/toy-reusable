@@ -9,6 +9,11 @@ param location string = resourceGroup().location
 @description('The name of the SKU to use for the Azure Storage account.')
 param storageAccountSkuName string = 'Standard_LRS'
 
+@description('The name of the container to create.')
+@minLength(3)
+@maxLength(63)
+param containerName string = 'cont${uniqueString(resourceGroup().id)}'
+
 var softDeleteRetentionPeriodDays = 7
 
 // This module is an example only.
@@ -24,6 +29,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   properties: {
     supportsHttpsTrafficOnly: true
     allowSharedKeyAccess: false
+    allowBlobPublicAccess: true
   }
 
   resource blobService 'blobServices' = {
@@ -36,6 +42,13 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
       containerDeleteRetentionPolicy: {
         enabled: true
         days: softDeleteRetentionPeriodDays
+      }
+    }
+
+    resource container 'containers' = {
+      name: containerName
+      properties: {
+        publicAccess: 'None'
       }
     }
   }
