@@ -48,6 +48,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
     resource container 'containers' = {
       name: containerName
       properties: {
+        denyEncryptionScopeOverride: true
         publicAccess: 'None'
       }
     }
